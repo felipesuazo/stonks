@@ -11,3 +11,12 @@ class Event(db.Model):
     created_at = db.Column(db.DateTime())
 
     _idx_streamer_name = db.Index('events_idx_streamer_name', 'streamer_name')
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'streamer_name': self.streamer_name,
+            'event_type': self.event_type,
+            'viewer_name': self.viewer_name,
+            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        }

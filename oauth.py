@@ -7,7 +7,7 @@ import settings
 
 class TwitchOauthClient:
     @staticmethod
-    def get_client(token: Optional = None):
+    def get_client(token: Optional = None, app: Optional[bool] = False):
         params = dict(
             client_id=settings.TWITCH_CLIENT_ID,
             client_secret=settings.TWITCH_CLIENT_SECRET,
@@ -17,6 +17,9 @@ class TwitchOauthClient:
 
         if token:
             params.update({'token': token})
+
+        if app:
+            params.update({'scope': 'channel:read:subscriptions'})
 
         return AsyncOAuth2Client(**params)
 
@@ -62,3 +65,13 @@ class TwitchOauthClient:
         await client.aclose()
         return user
 
+    @classmethod
+    async def get_app_token(cls):
+        token_url = f'https://id.twitch.tv/oauth2/token?client_id={settings.TWITCH_CLIENT_ID}&client_secret={settings.TWITCH_CLIENT_SECRET}'
+        client = cls.get_client(app=True)
+        token = await client.fetch_token(
+            url=token_url,
+            grant_type='client_credentials',
+        )
+        await client.aclose()
+        return token

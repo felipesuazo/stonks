@@ -25,8 +25,10 @@ class Home(HTTPEndpoint):
 class Streamer(HTTPEndpoint):
     @requires('authenticated', redirect='home')
     async def get(self, request):
+        last_events = await twitch_services.get_last_events_by_streamer(request.user.follow_to, 10)
+
         template = 'streamer.html'
-        context = {'request': request}
+        context = {'request': request, 'streamer_name': request.user.follow_to, 'events': last_events}
         return templates.TemplateResponse(template, context=context)
 
     @requires('authenticated', redirect='home')
@@ -38,6 +40,7 @@ class Streamer(HTTPEndpoint):
             streamer_exist = await twitch_services.check_streamer_exists(streamer_name)
             if streamer_exist:
                 await users_services.set_favorite_streamer(request.user, streamer_name)
+                await twitch_services.start_events_subscription(streamer_exist)
                 return RedirectResponse(request.url_for('streamer'), status_code=HTTP_302_FOUND)
             return JSONResponse({'error': 'Streamer does not exist'})
         return RedirectResponse(request.url_for('home'), status_code=HTTP_301_MOVED_PERMANENTLY)

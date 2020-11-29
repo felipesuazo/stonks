@@ -13,7 +13,7 @@ class Callback(HTTPEndpoint):
             message_id = request.headers['Twitch-Eventsub-Message-Id']
             retry = int(request.headers['Twitch-Eventsub-Message-Retry'])
             event_type = request.headers['Twitch-Eventsub-Message-Type']
-            signature = request.headers['Twitch-Eventsub-Message-Signature'].split('#')[-1]
+            signature = request.headers['Twitch-Eventsub-Message-Signature']
             timestamp = request.headers['Twitch-Eventsub-Message-Timestamp']
             subscription_type = request.headers['Twitch-Eventsub-Subscription-Type']
             subscription_version = request.headers['Twitch-Eventsub-Subscription-Version']
@@ -28,11 +28,12 @@ class Callback(HTTPEndpoint):
         if subscription and twitch_services.check_signature(
             message_id=message_id,
             timestamp=timestamp,
-            body=str(await request.body()),
+            body=await request.body(),
             secret=subscription.secret,
             expected=signature
         ):
             if event_type == constants.EVENT_WEBHOOK_CALLBACK_VERIFICATION:
+                print(event_data)
                 return PlainTextResponse(
                     status_code=status.HTTP_200_OK,
                     content=event_data['challenge']
@@ -42,7 +43,8 @@ class Callback(HTTPEndpoint):
                 if not event:
                     await twitch_services.process_notification(
                         subscription_type=subscription_type,
-                        event_data=event_data['data']
+                        event_data=event_data['event'],
+                        message_id=message_id
                     )
                 return JSONResponse(status_code=status.HTTP_200_OK)
 

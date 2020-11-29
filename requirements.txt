@@ -15,6 +15,7 @@ idna==2.10
 immutables==0.14
 itsdangerous==1.1.0
 Jinja2==2.11.2
+jsonify==0.5
 MarkupSafe==1.1.1
 pycparser==2.20
 python-multipart==0.0.5

@@ -3,3 +3,5 @@ EVENT_NOTIFICATION = 'notification'
 
 CTX_TOKEN_KEY = 'token'
 CTX_USER_KEY = 'user'
+
+SUBSCRIPTION_TYPE_CHANNEL_FOLLOW = 'channel.follow'

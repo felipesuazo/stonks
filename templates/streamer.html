@@ -1,17 +1,42 @@
 {% extends "layouts/base.html" %}
 
 {% block head %}
+    {{ super() }}
     <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
 {% endblock %}
 
 {% block content %}
-    <div id="player-id">
+    <div class="row">
+        <div class="col-8">
+            <p><a href="/">< Pick another streamer</a></p>
+            <div id="player-id"></div>
+        </div>
+        <div class="col-4">
+            <p class="text-right"><strong>{{streamer_name}}</strong></p>
+            <iframe frameborder="0"
+                scrolling="no"
+                id="chat_embed"
+                src="https://www.twitch.tv/embed/{{streamer_name}}/chat?parent=stonks-suazo-test.herokuapp.com"
+                height="500"
+                width="100%">
+        </iframe>
+        </div>
+        <div class="col-12">
+            <p><strong>Last 10 events</strong></p>
+            {% for event in events %}
+                <div class="row">
+                    <div class="col-3">{{event.created_at}}</div>
+                    <div class="col-3">{{event.event_type}}</div>
+                    <div class="col-3">{{event.viewer_name}}</div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
     <script type="text/javascript">
       var options = {
-        width: 400,
-        height: 250,
-        channel: "mariusoptimus",
+        width: 800,
+        height: 500,
+        channel: "{{streamer_name}}",
       };
       var player = new Twitch.Player("player-id", options);
     </script>
