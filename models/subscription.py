@@ -10,3 +10,5 @@ class Subscription(db.Model):
     broadcaster_user_name = db.Column(db.String())
     broadcaster_user_id = db.Column(db.String())
     created_at = db.Column(db.DateTime())
+
+    _idx_type_broadcaster_user_name = db.Index('subscriptions_idx_type_broadcaster_user_name', 'type', 'broadcaster_user_name')

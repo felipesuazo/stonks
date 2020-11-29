@@ -11,6 +11,7 @@ class Event(db.Model):
     created_at = db.Column(db.DateTime())
 
     _idx_streamer_name = db.Index('events_idx_streamer_name', 'streamer_name')
+    _idx_streamer_name_event_type = db.Index('events_idx_streamer_name_event_type', 'streamer_name', 'event_type')
 
     def as_dict(self):
         return {
