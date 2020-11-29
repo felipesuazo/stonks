@@ -73,18 +73,16 @@ def check_signature(
 async def process_notification(
     subscription_type: str, event_data: Any, message_id: str
 ):
-    if subscription_type == constants.SUBSCRIPTION_TYPE_CHANNEL_FOLLOW:
-        await Event.create(
-            id=message_id,
-            streamer_name=event_data['broadcaster_user_name'],
-            event_type=subscription_type,
-            viewer_name=event_data['user_name'],
-            created_at=datetime.now()
-        )
+    await Event.create(
+        id=message_id,
+        streamer_name=event_data['broadcaster_user_name'],
+        event_type=subscription_type,
+        viewer_name=event_data.get('user_name'),
+        created_at=datetime.now()
+    )
 
 
 async def start_events_subscription(streamer_data: Dict) -> None:
-    url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
     app_credentials = await TwitchOauthClient.get_app_token()
     headers = {
         'Client-ID': settings.TWITCH_CLIENT_ID,
@@ -103,19 +101,38 @@ async def start_events_subscription(streamer_data: Dict) -> None:
         }
     }
 
-    exist_follow = await get_subscription_by_type_and_streamer('channel.follow', streamer_data['display_name'])
+    for event in constants.SUBSCRIPTION_TYPES:
+        await _start_event_sub(
+            subscription_type=event,
+            streamer_id=streamer_data['id'],
+            streamer_name=streamer_data['display_name'],
+            headers=headers,
+            subscription_data=subscription_data
+        )
 
-    if not exist_follow:
-        follow_subscription = httpx.post(
+
+async def _start_event_sub(
+    subscription_type: str,
+    streamer_id: str,
+    streamer_name: str,
+    headers: Dict,
+    subscription_data: Dict
+) -> None:
+    exists_subscription = await get_subscription_by_type_and_streamer(subscription_type, streamer_name)
+
+    if not exists_subscription:
+        url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
+        subscription = httpx.post(
             url=url,
             headers=headers,
-            json={'type': 'channel.follow', **subscription_data}
+            json={'type': subscription_type, **subscription_data}
         )
-        follow_data = follow_subscription.json()['data'][0]
+        response_data = subscription.json()['data'][0]
+
         await Subscription.create(
-            id=follow_data['id'],
-            type=follow_data['type'],
+            id=response_data['id'],
+            type=subscription_type,
             secret=subscription_data['transport']['secret'],
-            broadcaster_user_name=streamer_data['display_name'],
-            broadcaster_user_id=streamer_data['id']
+            broadcaster_user_name=streamer_name,
+            broadcaster_user_id=streamer_id,
         )

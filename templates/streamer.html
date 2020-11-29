@@ -25,9 +25,9 @@
             <p><strong>Last 10 events</strong></p>
             {% for event in events %}
                 <div class="row">
-                    <div class="col-3">{{event.created_at}}</div>
-                    <div class="col-3">{{event.event_type}}</div>
-                    <div class="col-3">{{event.viewer_name}}</div>
+                    <div class="col-2">{{event.created_at}}</div>
+                    <div class="col-2">{{event.event_type}}</div>
+                    <div class="col-2">{{event.viewer_name}}</div>
                 </div>
             {% endfor %}
         </div>
