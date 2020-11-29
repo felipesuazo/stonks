@@ -72,8 +72,8 @@ def check_signature(
 
 async def process_notification(
     subscription_type: str, event_data: Any, message_id: str
-):
-    await Event.create(
+) -> Event:
+    return await Event.create(
         id=message_id,
         streamer_name=event_data['broadcaster_user_name'],
         event_type=subscription_type,

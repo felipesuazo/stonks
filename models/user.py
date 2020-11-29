@@ -11,6 +11,7 @@ class User(db.Model, BaseUser):
     avatar = db.Column(db.String())
     follow_to = db.Column(db.String())
 
+    @property
     def is_authenticated(self) -> bool:
         return True
 

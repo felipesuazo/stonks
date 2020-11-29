@@ -8,7 +8,6 @@ db = Gino(
     user=settings.DB_USER,
     password=settings.DB_PASS,
     database=settings.DB_NAME,
-    echo=True,
 )
 
 __all__ = ['event', 'subscription', 'user', 'db']

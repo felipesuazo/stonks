@@ -39,5 +39,10 @@
         channel: "{{streamer_name}}",
       };
       var player = new Twitch.Player("player-id", options);
+
+      var ws = new WebSocket("wss://stonks-suazo-test.herokuapp.com/ws")
+      ws.onmessage = function (event) {
+          console.log(event.data);
+      };
     </script>
 {% endblock %}

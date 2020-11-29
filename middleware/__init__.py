@@ -5,10 +5,12 @@ from starlette.middleware.sessions import SessionMiddleware
 import settings
 from middleware.auth import CookieAuthBackend, SetCookieMiddleware
 from middleware.context import RequestContextMiddleware
+from middleware.follow_room import FollowRoomMiddleware
 
 middleware = [
     Middleware(SessionMiddleware, secret_key=settings.SECRET_KEY),
     Middleware(AuthenticationMiddleware, backend=CookieAuthBackend()),
     Middleware(SetCookieMiddleware),
-    Middleware(RequestContextMiddleware)
+    Middleware(RequestContextMiddleware),
+    Middleware(FollowRoomMiddleware),
 ]

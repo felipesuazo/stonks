@@ -1,9 +1,13 @@
+from typing import Any, Optional
+
 from starlette.authentication import requires
-from starlette.endpoints import HTTPEndpoint
+from starlette.endpoints import HTTPEndpoint, WebSocketEndpoint
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse
 from starlette.status import HTTP_302_FOUND, HTTP_301_MOVED_PERMANENTLY
+from starlette.websockets import WebSocket
 
+from models.follow_room import FollowRoom
 from resources import templates
 from services import users_services, twitch_services
 
@@ -44,3 +48,21 @@ class Streamer(HTTPEndpoint):
                 return RedirectResponse(request.url_for('streamer'), status_code=HTTP_302_FOUND)
             return JSONResponse({'error': 'Streamer does not exist'})
         return RedirectResponse(request.url_for('home'), status_code=HTTP_301_MOVED_PERMANENTLY)
+
+
+class StreamerEvents(WebSocketEndpoint):
+    encoding = 'json'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.follow_room: Optional[FollowRoom] = None
+
+    @requires('authenticated')
+    async def on_connect(self, websocket: WebSocket) -> None:
+        follow_room: Optional[FollowRoom] = self.scope.get('room')
+        await websocket.accept()
+        self.follow_room = follow_room
+        self.follow_room.add_websocket(websocket)
+
+    async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
+        self.follow_room.remove_websocket(websocket)

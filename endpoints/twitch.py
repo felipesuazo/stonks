@@ -41,11 +41,12 @@ class Callback(HTTPEndpoint):
             elif event_type == constants.EVENT_NOTIFICATION:
                 event = await twitch_services.get_event_by_id(message_id)
                 if not event:
-                    await twitch_services.process_notification(
+                    event = await twitch_services.process_notification(
                         subscription_type=subscription_type,
                         event_data=event_data['event'],
                         message_id=message_id
                     )
+
                 return JSONResponse(status_code=status.HTTP_200_OK)
 
         return JSONResponse(
