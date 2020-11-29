@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+    <form action="/streamer" method="post">
+        <p>
+            Enter the name of your favorite Twitch Streamer
+            {% if following %}
+                (Currently following <b>{{following}}</b>)
+            {% endif %}
+        </p>
+        <div class="input-group mb-3">
+          <input type="text" name="streamer_name" class="form-control" placeholder="felipesuazocl" aria-label="felipesuazocl" aria-describedby="button-addon2">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Twitch it!</button>
+          </div>
+        </div>
+    </form>
+{% endblock %}

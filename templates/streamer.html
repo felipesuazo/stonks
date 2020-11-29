@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+
+{% block head %}
+    <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="player-id">
+    </div>
+    <script type="text/javascript">
+      var options = {
+        width: 400,
+        height: 250,
+        channel: "mariusoptimus",
+      };
+      var player = new Twitch.Player("player-id", options);
+    </script>
+{% endblock %}
