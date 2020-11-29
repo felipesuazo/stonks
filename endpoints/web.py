@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 
 from starlette.authentication import requires
 from starlette.endpoints import HTTPEndpoint, WebSocketEndpoint
